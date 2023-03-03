@@ -12,6 +12,5 @@ jobs:
     
     steps:
       - uses: actions/checkout@v3
-      - name: Diga
-        run: echo Hello-World!
+      - run: echo Hello-World!
 
