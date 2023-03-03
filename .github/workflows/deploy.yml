@@ -1,0 +1,17 @@
+name: Hello World Integração Contínua!
+
+on: 
+  push:
+    branches: ["main"]
+  pull_request: 
+    branches: ["main"]
+    
+jobs:
+  OlaMundo:
+    runs-on: ubuntu:latest
+    
+    steps:
+      - uses: actions/checkout@v3
+        name: Diga
+        run: echo Hello-World!
+
