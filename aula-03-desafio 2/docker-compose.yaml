@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: DockerFile
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/tcc
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=tcc
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - postgres_volume:/var/lib/postgresql/data
+
+volumes:
+  postgres_volume:

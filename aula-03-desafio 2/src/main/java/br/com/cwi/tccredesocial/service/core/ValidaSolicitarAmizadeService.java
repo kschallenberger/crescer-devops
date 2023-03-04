@@ -1,0 +1,37 @@
+package br.com.cwi.tccredesocial.service.core;
+
+import br.com.cwi.tccredesocial.domain.Amizade;
+import br.com.cwi.tccredesocial.domain.Situacao;
+import br.com.cwi.tccredesocial.repository.AmizadeRepository;
+import br.com.cwi.tccredesocial.security.domain.Usuario;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import static java.util.Objects.nonNull;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+
+@Service
+public class ValidaSolicitarAmizadeService {
+
+    @Autowired
+    private AmizadeRepository amizadeRepository;
+
+    public void validar(Usuario usuarioAtivo, Usuario usuarioAmigo) {
+        if (usuarioAtivo.getId().equals(usuarioAmigo.getId()))
+            throw new ResponseStatusException(BAD_REQUEST, "Id do usuário é igual ao usuário solicitante");
+        Amizade amizade = amizadeRepository.findByUsuarioAtivoAndUsuarioAmigo(usuarioAtivo, usuarioAmigo);
+        if (nonNull(amizade)) {
+            if (amizade.getSituacao() == Situacao.SOLICITADO) {
+                throw new ResponseStatusException(BAD_REQUEST, "Já existe um pedido de amizade");
+            }
+            if (amizade.getSituacao() == Situacao.PENDENTE) {
+                throw new ResponseStatusException(BAD_REQUEST,
+                        "Já existe um pedido pendente dessa amizade para o usuário. Deve aceitar o pedido.");
+            }
+            if (amizade.getSituacao() == Situacao.ACEITO) {
+                throw new ResponseStatusException(BAD_REQUEST, "O usuário já é seu amigo");
+            }
+        }
+    }
+}
